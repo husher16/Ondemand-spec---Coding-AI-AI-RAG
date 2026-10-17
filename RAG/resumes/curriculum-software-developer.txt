@@ -1,0 +1,46 @@
+### LUCA VERDI
+Senior Software Developer
+Email: luca.verdi@email.com
+Tel: +39 328 1234567
+Torino, Italia
+LinkedIn: linkedin.com/in/lucaverdi
+
+### PROFILO PROFESSIONALE
+Senior Software Developer con oltre 10 anni di esperienza nello sviluppo di applicazioni enterprise scalabili e ad alte prestazioni. Specializzato in architetture a microservizi, backend development con Python, Java e Go, e metodologie Agile/DevOps. Forte orientamento al problem solving e alla qualità del codice.
+
+### ESPERIENZA PROFESSIONALE
+
+### Lead Software Engineer | CloudTech Solutions | 2019 - Presente
+- Guida tecnica di un team di 10 sviluppatori backend e frontend
+- Progettazione e migrazione dell'architettura monolitica verso microservizi cloud-native su Kubernetes
+- Ottimizzazione delle prestazioni del database riducendo la latenza del 40%
+- Implementazione di pipeline CI/CD con GitHub Actions e Docker
+
+### Senior Python Developer | DataFlow Systems | 2015 - 2019
+- Sviluppo di API RESTful e servizi asincroni per elaborazione dati ad alto volume
+- Integrazione con broker di messaggi (RabbitMQ, Kafka) e database NoSQL (MongoDB, Redis)
+- Scrittura di test unitari e di integrazione con copertura del codice superiore all'85%
+
+### Software Developer | WebApp Studio | 2012 - 2015
+- Sviluppo di funzionalità backend e integrazione frontend con framework moderni
+- Manutenzione e ottimizzazione di database relazionali PostgreSQL e MySQL
+
+### COMPETENZE TECNICHE
+- Python, Java, Go, TypeScript
+- Django, FastAPI, Flask, Spring Boot
+- Docker, Kubernetes, CI/CD, Terraform
+- PostgreSQL, MongoDB, Redis, Elasticsearch
+- REST API, GraphQL, Microservizi, RabbitMQ, Kafka
+- Git, Linux, AWS, Cloud Architecture
+
+### CERTIFICAZIONI
+- AWS Certified Solutions Architect - Associate
+- Certified Kubernetes Administrator (CKA)
+
+### FORMAZIONE
+- Laurea Magistrale in Ingegneria Informatica | Politecnico di Torino | 2012
+- Laurea Triennale in Informatica | Università di Torino | 2010
+
+### LINGUE
+- Italiano: Madrelingua
+- Inglese: Avanzato (C1)
