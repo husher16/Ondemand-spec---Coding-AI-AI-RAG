@@ -1,0 +1,19 @@
+# Videos
+*.mp4
+
+# Reference course materials
+Hr_Assistant/Code/
+
+# Virtual environments
+.venv/
+venv/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Environment files
+.env
+
+# ChromaDB data
+data/chromadb/
