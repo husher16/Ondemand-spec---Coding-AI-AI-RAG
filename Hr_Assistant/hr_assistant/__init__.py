@@ -11,13 +11,52 @@ from utils import LLMHelper
 
 db = Database()
 
-# Process documents syncing folder to db
+# Process documents
 added, updated, removed = DocumentProcessor.process_documents(db)
 print(f"Document sync complete: {added} added, {updated} updated, {removed} removed")
 
 
+@cl.action_callback("db_stats")
+async def on_action(action: cl.Action):
+    # print(action.payload)
+    db_info = db.get_stats()
+    # print(db_info)
+    response = await LLMHelper.get_db_stats(db_info)
+    await cl.Message(response).send()
+
+
+@cl.action_callback("db_reindex")
+async def on_action(action: cl.Action):
+    added, updated, removed = DocumentProcessor.process_documents(db)
+    message = f"DB reindicizzato con successo. Document sync complete: {added} added, {updated} updated, {removed} removed"
+    await cl.Message(message).send()
+
+
+@cl.action_callback("say_hello")
+async def on_action(action: cl.Action):
+    action = action.payload["value"]
+    await cl.Message(f"Hello {action}").send()
+
+
 @cl.on_chat_start
 async def start():
+
+    actions = [
+        cl.Action(
+            name="db_stats",
+            icon="mouse-pointer-click",
+            payload={"value": "db_stats"},
+            label="Statistiche Database",
+        ),
+        cl.Action(
+            name="db_reindex",
+            icon="mouse-pointer-click",
+            payload={"value": "db_reindex"},
+            label="Reindex Database",
+        ),
+    ]
+
+    await cl.Message(content="Informazioni del sistema:", actions=actions).send()
 
     cl.user_session.set(
         "messages",
@@ -36,21 +75,27 @@ async def start():
 @cl.on_message
 async def handle_message(message: cl.Message):
     user_question = message.content
-    results = db.query(user_question)
-
+    results = db.query(user_question, 3)
+    print("RESULT DB: ", results)
     filename = results["metadatas"][0][0]["source"]
-    context_lines = DocumentProcessor.read_first_lines(
-        os.path.join(Config.DOCUMENTS_DIR, filename), 200
+    candidate_info = DocumentProcessor.read_first_lines(
+        os.path.join(Config.DOCUMENTS_DIR, filename), 10
     )
 
-    context = f"CONTESTO: nome file {results['metadatas'][0][0]['source']} ecco il paragrafo piu' significativo: {results['documents'][0][0]}"
+    context = f"CONTESTO: nome file {results['metadatas'][0][0]['source']} ecco il paragrafo piu' significativo: {results['documents'][0][0]}, qui trovi le informazioni del candidato: {candidate_info}"
 
-    candidate_name = await LLMHelper.get_candidate_name(context_lines)  # TIP: riusciamo a eliminare questa chiamata aggiuntiva per il nome?
+    # candidate_name = await LLMHelper.get_candidate_name(context_lines)
 
-    prompt = LLMHelper.create_prompt(context, user_question, candidate_name)
+    prompt = LLMHelper.create_prompt(context, user_question)
 
     messages = cl.user_session.get("messages", [])
     messages.append({"role": "user", "content": prompt})
+
+    # print("*" * 80)
+    # print("*" * 80)
+    # print("prompt", prompt)
+    # print("*" * 80)
+    # print("*" * 80)
 
     response_message = cl.Message(content="")
     await response_message.send()

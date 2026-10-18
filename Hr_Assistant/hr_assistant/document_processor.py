@@ -64,25 +64,18 @@ class DocumentProcessor:
             for f in os.listdir(Config.DOCUMENTS_DIR)
             if f.endswith(".txt")
         }
-        print("Current files in directory:", current_files)
 
         # Get existing files from database
         existing_files = db.get_tracked_files()
-        print("Existing files in db:", existing_files)
 
         # Identify files to add, update, and remove
         files_to_add = set(current_files.keys()) - set(existing_files.keys())
-        print("Files to add:", files_to_add)
-
         files_to_remove = set(existing_files.keys()) - set(current_files.keys())
-        print("Files to remove:", files_to_remove)
-
         files_to_update = {
             f
             for f in set(current_files.keys()) & set(existing_files.keys())
             if current_files[f]["hash"] != existing_files[f]["hash"]
         }
-        print("Files to update:", files_to_update)
 
         # Process updates
         for action, files in [("add", files_to_add), ("update", files_to_update)]:
