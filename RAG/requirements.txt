@@ -1,0 +1,5 @@
+# Librerie principali utilizzate nel progetto RAG Base
+chromadb==1.5.9
+openai==3.33.0
+python-dotenv==1.2.4
+ipykernel==7.4.0
