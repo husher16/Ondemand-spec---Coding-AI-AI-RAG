@@ -73,7 +73,7 @@ class DocumentProcessor:
         }
 
         return metadata
-    #NEW
+
     def _process_zip_file(self, file_path: str) -> List[Tuple[str, str]]:
         """Process contents of ZIP files"""
         results = []
@@ -83,17 +83,19 @@ class DocumentProcessor:
                 for root, _, files in os.walk(temp_dir):
                     for file in files:
                         file_path = os.path.join(root, file)
-                        if (os.path.splitext(file)[1].lower()in self.SUPPORTED_EXTENSIONS):
+                        if (
+                            os.path.splitext(file)[1].lower()
+                            in self.SUPPORTED_EXTENSIONS
+                        ):
                             content = self._convert_to_markdown(file_path)
                             if content:
                                 results.append((file, content))
         return results
-    #NEW
+
     def _convert_to_markdown(self, file_path: str) -> str:
         """Convert file to markdown using MarkItDown"""
         try:
             result = self.md_converter.convert(file_path)
-            print("Converted to markdown:",result)
             return result.text_content
         except Exception as e:
             print(f"Error converting {file_path}: {str(e)}")
@@ -106,7 +108,7 @@ class DocumentProcessor:
         documents = []
         metadatas = []
         ids = []
-        #NEW
+
         extension = os.path.splitext(file_path)[1].lower()
         file_type = self.SUPPORTED_EXTENSIONS.get(extension)
 
@@ -116,13 +118,14 @@ class DocumentProcessor:
         content = ""
         if file_type == "archive":
             zip_contents = self._process_zip_file(file_path)
+            print("zip_contents", zip_contents)
             for filename, zip_content in zip_contents:
                 if zip_content:
                     content += f"\n\nFile: {filename}\n{zip_content}"
+                    print("ZIP content", content)
         else:
             content = self._convert_to_markdown(file_path)
-            print(content)
-        #END NEW
+
         if content:
             sc = SemanticChunking(Config.AI_API_KEY, 65, 3)
             chunks = sc.chunk_text(content)
@@ -142,7 +145,7 @@ class DocumentProcessor:
         current_files = {
             f: self.get_document_metadata(os.path.join(Config.DOCUMENTS_DIR, f))
             for f in os.listdir(Config.DOCUMENTS_DIR)
-            if os.path.splitext(f)[1].lower() in self.SUPPORTED_EXTENSIONS #NEW
+            if os.path.splitext(f)[1].lower() in self.SUPPORTED_EXTENSIONS
         }
 
         # Get existing files from database
