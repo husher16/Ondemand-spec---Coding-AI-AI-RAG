@@ -13,6 +13,8 @@ $ eval $(poetry env activate)
 
 $ poetry add chromadb openai ollama chainlit
 
+$ poetry add markitdown
+
 ```
 
 se c'e' un errore di versioni di librerie, fare questa modifica al file pyproject.toml e poi provare a rilanciare ```poetry add chromadb openai ollama chainlit```
@@ -40,8 +42,7 @@ $ poetry add scikit-learn
 $ poetry add langchain_openai
 
 
-poetry add torch
-poetry add sentence-transformers
+
 ```
 
 

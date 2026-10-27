@@ -11,7 +11,8 @@ from utils import LLMHelper
 db = Database()
 
 # Process documents
-added, updated, removed = DocumentProcessor.process_documents(db)
+dp = DocumentProcessor()
+added, updated, removed = dp.process_documents(db)
 print(f"Document sync complete: {added} added, {updated} updated, {removed} removed")
 
 
@@ -26,7 +27,7 @@ async def on_action(action: cl.Action):
 
 @cl.action_callback("db_reindex")
 async def on_action(action: cl.Action):
-    added, updated, removed = DocumentProcessor.process_documents(db)
+    added, updated, removed = dp.process_documents(db)
     message = f"DB reindicizzato con successo. Document sync complete: {added} added, {updated} updated, {removed} removed"
     await cl.Message(message).send()
 
@@ -64,161 +65,52 @@ async def start():
         ],
     )
 
+
 @cl.on_message
 async def handle_message(message: cl.Message):
     user_question = message.content
+    results = db.query(user_question)
 
-    # 📌 1️⃣ Usa l'LLM per determinare l'intenzione dell'utente
-    intent = LLMHelper.classify_intent(user_question)  
+    filename = results["metadatas"][0][0]["source"]
+    context_lines = DocumentProcessor.read_first_lines(
+        os.path.join(Config.DOCUMENTS_DIR, filename), 200
+    )
+
+    context = f"CONTESTO: nome file {results['metadatas'][0][0]['source']} ecco il paragrafo piu' significativo: {results['documents'][0][0]}"
+
+    candidate_name = await LLMHelper.get_candidate_name(context_lines)
+
+    prompt = LLMHelper.create_prompt(context, user_question, candidate_name)
 
     messages = cl.user_session.get("messages", [])
+    messages.append({"role": "user", "content": prompt})
 
-    # 📌 2️⃣ Se l'intenzione è cercare un CV
-    if intent == "search_cv":
-        results = db.query(user_question)
+    # print("*" * 80)
+    # print("*" * 80)
+    # print("prompt", prompt)
+    # print("*" * 80)
+    # print("*" * 80)
 
-        if not results or not results["documents"]:
-            error_message = (
-                "❌ Nessun curriculum trovato per la tua richiesta.\n"
-                "🔍 **Suggerimenti:**\n"
-                "- Prova con parole chiave più specifiche (es. 'developer Python senior')\n"
-                "- Invia una nuova richiesta con dettagli aggiuntivi\n"
+    response_message = cl.Message(content="")
+    await response_message.send()
+
+    try:
+        stream = LLMHelper.chat(messages)
+
+        for chunk in stream:
+            await response_message.stream_token(
+                str(chunk.choices[0].delta.content or "")
             )
-            await cl.Message(content=error_message).send()
-            return
 
-        filename = results["metadatas"][0][0]["source"]
-        context_lines = DocumentProcessor.read_first_lines(
-            os.path.join(Config.DOCUMENTS_DIR, filename), 20
-        )
+        messages.append({"role": "assistant", "content": response_message.content})
+        await response_message.update()
 
-        context = (
-            f"📂 **Nome file**: {filename}\n"
-            f"📝 **Estratto dal CV:**\n"
-            f"```{results['documents'][0][0]}```"
-        )
-        print(context)
-        # candidate_name = await LLMHelper.get_candidate_name(context_lines)
+    except Exception as e:
+        error_message = f"An error occurred: {str(e)}"
+        await cl.Message(content=error_message).send()
+        print(error_message)
 
-        # 📌 Prompt ottimizzato per chiarezza
-        prompt = LLMHelper.create_prompt(context, user_question, context_lines)
-
-        messages.append({"role": "user", "content": prompt})
-
-        response_message = cl.Message(content="")
-        await response_message.send()
-
-        try:
-            stream = LLMHelper.chat(messages)
-
-            for chunk in stream:
-                await response_message.stream_token(
-                    str(chunk.choices[0].delta.content or "")
-                )
-
-            messages.append({"role": "assistant", "content": response_message.content})
-            await response_message.update()
-            cl.user_session.set("last_cv_context", context)  
-            cl.user_session.set("last_cv_header", context_lines)
-
-        except Exception as e:
-            error_message = f"❌ **Errore interno:** {str(e)}"
-            await cl.Message(content=error_message).send()
-            print(error_message)
-
-    # 📌 3️⃣ Se l'intenzione è chiedere informazioni su un CV già trovato
-    elif intent == "info_cv":
-        context = cl.user_session.get("last_cv_context", "")
-        header = cl.user_session.get("last_cv_header", "")
-
-        if not context:
-            error_message = (
-                "⚠️ Non ci sono CV recenti a cui fare riferimento.\n"
-                "💡 **Prova a cercare un candidato prima con una domanda come:**\n"
-                "- 'Mostrami i candidati per sviluppatore Python'\n"
-                "- 'Chi ha esperienza con Kubernetes?'"
-            )
-            await cl.Message(content=error_message).send()
-            return
-
-        # 📌 Chiedi informazioni specifiche sul CV già trovato
-        prompt = LLMHelper.create_prompt(context, user_question, header)
-
-        messages.append({"role": "user", "content": prompt})
-
-        response_message = cl.Message(content="")
-        await response_message.send()
-
-        try:
-            stream = LLMHelper.chat(messages)
-
-            for chunk in stream:
-                await response_message.stream_token(
-                    str(chunk.choices[0].delta.content or "")
-                )
-
-            messages.append({"role": "assistant", "content": response_message.content})
-            await response_message.update()
-
-        except Exception as e:
-            error_message = f"❌ **Errore interno:** {str(e)}"
-            await cl.Message(content=error_message).send()
-            print(error_message)
-
-    else:
-        await cl.Message(content="❌ Non ho capito la tua richiesta. Puoi riformularla?").send()
-
-    # 📌 Salva lo stato della conversazione
     cl.user_session.set("messages", messages)
-    if intent == "search_cv":
-        cl.user_session.set("last_cv_context", context)  
-        cl.user_session.set("last_cv_header", context_lines)
-
-# @cl.on_message
-# async def handle_message(message: cl.Message):
-#     user_question = message.content
-#     results = db.query(user_question)
-
-#     filename = results["metadatas"][0][0]["source"]
-#     context_lines = DocumentProcessor.read_first_lines(
-#         os.path.join(Config.DOCUMENTS_DIR, filename), 200
-#     )
-
-#     context = f"CONTESTO: nome file {results['metadatas'][0][0]['source']} ecco il paragrafo piu' significativo: {results['documents'][0][0]}"
-
-#     candidate_name = await LLMHelper.get_candidate_name(context_lines)
-
-#     prompt = LLMHelper.create_prompt(context, user_question, candidate_name)
-
-#     messages = cl.user_session.get("messages", [])
-#     messages.append({"role": "user", "content": prompt})
-
-#     # print("*" * 80)
-#     # print("*" * 80)
-#     # print("prompt", prompt)
-#     # print("*" * 80)
-#     # print("*" * 80)
-
-#     response_message = cl.Message(content="")
-#     await response_message.send()
-
-#     try:
-#         stream = LLMHelper.chat(messages)
-
-#         for chunk in stream:
-#             await response_message.stream_token(
-#                 str(chunk.choices[0].delta.content or "")
-#             )
-
-#         messages.append({"role": "assistant", "content": response_message.content})
-#         await response_message.update()
-
-#     except Exception as e:
-#         error_message = f"An error occurred: {str(e)}"
-#         await cl.Message(content=error_message).send()
-#         print(error_message)
-
-#     cl.user_session.set("messages", messages)
 
 
 # @cl.on_chat_end

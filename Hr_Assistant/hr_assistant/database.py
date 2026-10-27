@@ -1,22 +1,22 @@
 import sys
 import os
 sys.path.insert(0, os.path.dirname(__file__))
+# database.py
 import chromadb
+from chromadb.utils import embedding_functions
 from config import Config
-from custom_embedding import CustomEmbeddingFunction
+
 
 class Database:
     def __init__(self):
-        # Inizializza la funzione di embedding personalizzata
-        self.local_ef = CustomEmbeddingFunction()
-        
-        # Inizializza il client persistente di ChromaDB
-        self.client = chromadb.PersistentClient(path=Config.PERSISTENT_DIR)
+        self.openai_ef = embedding_functions.OpenAIEmbeddingFunction(
+            api_key=Config.OPENAI_KEY, model_name=Config.MODEL_NAME
+        )
 
-        # ✅ Ora ChromaDB accetta correttamente la funzione di embedding
+        # Initialize persistent client
+        self.client = chromadb.PersistentClient(path=Config.PERSISTENT_DIR)
         self.collection = self.client.get_or_create_collection(
-            name=Config.COLLECTION_NAME,
-            embedding_function=self.local_ef  # ✅ Funziona perché è un oggetto con __call__()
+            name=Config.COLLECTION_NAME, embedding_function=self.openai_ef
         )
 
     def add_documents(self, documents, metadatas, ids):
