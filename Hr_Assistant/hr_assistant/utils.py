@@ -1,3 +1,6 @@
+import sys
+import os
+sys.path.insert(0, os.path.dirname(__file__))
 # utils.py
 from config import Config
 from openai import OpenAI
@@ -44,7 +47,7 @@ class LLMHelper:
         return response.choices[0].message.content
 
     @staticmethod
-    def create_prompt(context, question, candidate_name):
+    def create_prompt(context, question):
         return f"""
             Dato il seguente contesto: 
             [[[
@@ -52,7 +55,8 @@ class LLMHelper:
             ]]].
             Rispondi alla domanda dell'utente: [[[ {question}]]] .
             Spiega che nel file individuato c'e' il profilo piu' adatto. 
-            Assicurati di nominare il Nome dei file.
-            Assicurati di indicare il nome del candidato: [[[ {candidate_name} ]]].
             Argometa la scelta utilizzando il contenuto del testo individuato nel contesto.
+            Assicurati di indicare il nome del candidato.
+            Alla fine del tuo ragionamento, riporta le informazioni di contatto del candidato.
+            Assicurati di nominare il Nome dei file SOLO alla fine, mai nel mezzo del tuo ragionamento.
         """

@@ -1,11 +1,11 @@
+import sys
+import os
+sys.path.insert(0, os.path.dirname(__file__))
 # document_processor.py
 import os
-import sys
 import uuid
 import hashlib
 from datetime import datetime
-
-sys.path.insert(0, os.path.dirname(__file__))
 from config import Config
 from semantic_chunking import SemanticChunking
 
@@ -14,7 +14,7 @@ class DocumentProcessor:
 
     @staticmethod
     def read_first_lines(file_path, n_lines=100):
-        with open(file_path, "r", encoding="utf-8") as file:
+        with open(file_path, "r") as file:
             return [line.strip() for line, _ in zip(file, range(n_lines))]
 
     @staticmethod
@@ -42,11 +42,10 @@ class DocumentProcessor:
         metadatas = []
         ids = []
 
-        with open(file_path, "r", encoding="utf-8") as file:
+        with open(file_path, "r") as file:
             txt = file.read()
-            # OLD
-            # chunks = file.read().replace("\n", ".").split("### ")
-            chunks = SemanticChunking.chunk_it(txt)
+            sc = SemanticChunking()
+            chunks = sc.chunk_text(txt)
             file_metadata = DocumentProcessor.get_document_metadata(file_path)
 
             for chunk in chunks:
@@ -75,6 +74,7 @@ class DocumentProcessor:
         # Identify files to add, update, and remove
         files_to_add = set(current_files.keys()) - set(existing_files.keys())
         files_to_remove = set(existing_files.keys()) - set(current_files.keys())
+
         files_to_update = {
             f
             for f in set(current_files.keys()) & set(existing_files.keys())
@@ -95,7 +95,6 @@ class DocumentProcessor:
 
                 # Add new entries
                 if documents:
-                    # Add documents to database
                     db.add_documents(documents, metadatas, ids)
 
         # Remove deleted files from database

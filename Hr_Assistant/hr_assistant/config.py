@@ -1,3 +1,6 @@
+import sys
+import os
+sys.path.insert(0, os.path.dirname(__file__))
 # config.py
 import os
 from dotenv import load_dotenv
@@ -10,7 +13,7 @@ class Config:
     COLLECTION_NAME = "CVs"
     PERSISTENT_DIR = "data/chromadb"
     # Embedding
-    MODEL_NAME = "text-embedding-3-large"
+    MODEL_NAME = "text-embedding-3-small"
     OPENAI_KEY = os.getenv("OPENAI_API_KEY", "")
     # Completamento
     ### ollama

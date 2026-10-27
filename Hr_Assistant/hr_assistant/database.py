@@ -1,9 +1,7 @@
-# database.py
-import os
 import sys
-
+import os
 sys.path.insert(0, os.path.dirname(__file__))
-
+# database.py
 import chromadb
 from chromadb.utils import embedding_functions
 from config import Config
@@ -54,8 +52,12 @@ class Database:
         valori_distinti = set(d["source"] for d in result["metadatas"])
         numero_files = len(valori_distinti)
 
+        stats = {
+            "numero_totale_documenti": self.collection.count(),
+            "nome_collezione": self.collection.name,
+        }
         return f"""
-            Nome Collezione: {self.collection.name}
-            Numero totale Frammenti: {self.collection.count()}
+            Nome Collezione: {stats['nome_collezione']} 
+            Numero totale Frammenti: {stats['numero_totale_documenti']}
             Numero Files Elaborati: {numero_files}
         """

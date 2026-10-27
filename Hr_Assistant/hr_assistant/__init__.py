@@ -1,3 +1,6 @@
+import sys
+import os
+sys.path.insert(0, os.path.dirname(__file__))
 import os
 import chainlit as cl
 from document_processor import DocumentProcessor
@@ -68,14 +71,15 @@ async def handle_message(message: cl.Message):
     results = db.query(user_question)
 
     filename = results["metadatas"][0][0]["source"]
-    context_lines = DocumentProcessor.read_first_lines(
-        os.path.join(Config.DOCUMENTS_DIR, filename), 200
+    candidate_info = DocumentProcessor.read_first_lines(
+        os.path.join(Config.DOCUMENTS_DIR, filename), 10
     )
 
-    context = f"CONTESTO: nome file {results['metadatas'][0][0]['source']} ecco il paragrafo piu' significativo: {results['documents'][0][0]}"
+    context = f"CONTESTO: nome file {results['metadatas'][0][0]['source']} ecco il paragrafo piu' significativo: {results['documents'][0][0]}, ecco la parte iniziale del file con le informazioni del candidato: {candidate_info}"
 
-    candidate_name = await LLMHelper.get_candidate_name(context_lines)
-    prompt = LLMHelper.create_prompt(context, user_question, candidate_name)
+    #candidate_name = await LLMHelper.get_candidate_name(context_lines)
+
+    prompt = LLMHelper.create_prompt(context, user_question)
 
     messages = cl.user_session.get("messages", [])
     messages.append({"role": "user", "content": prompt})
