@@ -94,11 +94,11 @@ class DocumentProcessor:
 
     def _convert_to_markdown(self, file_path: str) -> str:
         """Convert file to markdown using MarkItDown"""
-        try:
+        try:            
             result = self.md_converter.convert(file_path)
             return result.text_content
-        except Exception as e:
-            print(f"Error converting {file_path}: {str(e)}")
+        except:
+            print(f"Error converting {file_path}")
             return ""
 
     def process_single_document(
@@ -118,11 +118,9 @@ class DocumentProcessor:
         content = ""
         if file_type == "archive":
             zip_contents = self._process_zip_file(file_path)
-            print("zip_contents", zip_contents)
             for filename, zip_content in zip_contents:
                 if zip_content:
                     content += f"\n\nFile: {filename}\n{zip_content}"
-                    print("ZIP content", content)
         else:
             content = self._convert_to_markdown(file_path)
 

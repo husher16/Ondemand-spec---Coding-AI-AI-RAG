@@ -30,3 +30,15 @@ in semantic chunking aggiunta funzione _split_into_sentences per evitare che un 
 
 - possibilita' di aggiungere uno o piu' file in resumes da interfaccia, e all'aggiunta, lanciare l'aggiornamento del database degli embeddings
 - nuova action per azzerare il database
+
+## 09 - Tema UI
+
+- https://docs.chainlit.io/customisation/theme
+file : theme.json
+
+- https://docs.chainlit.io/customisation/custom-css
+in .chainlit/config.toml specifica di css  --> app.css
+
+- https://docs.chainlit.io/customisation/avatars#avatars
+
+cl.Message(author="hr_assistant", content= ....

@@ -57,5 +57,5 @@ class LLMHelper:
             Spiega che nel file individuato c'e' il profilo piu' adatto. 
             Assicurati di nominare il Nome dei file.
             Assicurati di indicare il nome del candidato: [[[ {candidate_name} ]]].
-            Argometa la scelta utilizzando il contenuto del testo individuato nel contesto.
+            Argomenta la scelta utilizzando il contenuto del testo individuato nel contesto.
         """

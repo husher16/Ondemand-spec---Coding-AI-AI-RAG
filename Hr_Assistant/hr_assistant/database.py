@@ -24,7 +24,6 @@ class Database:
 
     def delete_collection(self):
         self.client.delete_collection(Config.COLLECTION_NAME)
-        #eliminare i file in data/chromadb
         self._init_collection()
         
     def add_documents(self, documents, metadatas, ids):
