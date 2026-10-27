@@ -64,22 +64,21 @@ async def start():
         ],
     )
 
-
 @cl.on_message
 async def handle_message(message: cl.Message):
     user_question = message.content
     results = db.query(user_question)
 
     filename = results["metadatas"][0][0]["source"]
-    candidate_info = DocumentProcessor.read_first_lines(
-        os.path.join(Config.DOCUMENTS_DIR, filename), 10
+    context_lines = DocumentProcessor.read_first_lines(
+        os.path.join(Config.DOCUMENTS_DIR, filename), 200
     )
 
-    context = f"CONTESTO: nome file {results['metadatas'][0][0]['source']} ecco il paragrafo piu' significativo: {results['documents'][0][0]}, ecco la parte iniziale del file con le informazioni del candidato: {candidate_info}"
+    context = f"CONTESTO: nome file {results['metadatas'][0][0]['source']} ecco il paragrafo piu' significativo: {results['documents'][0][0]}"
 
-    #candidate_name = await LLMHelper.get_candidate_name(context_lines)
+    candidate_name = await LLMHelper.get_candidate_name(context_lines)
 
-    prompt = LLMHelper.create_prompt(context, user_question)
+    prompt = LLMHelper.create_prompt(context, user_question, candidate_name)
 
     messages = cl.user_session.get("messages", [])
     messages.append({"role": "user", "content": prompt})

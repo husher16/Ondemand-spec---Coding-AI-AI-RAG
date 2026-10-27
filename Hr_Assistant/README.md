@@ -40,7 +40,8 @@ $ poetry add scikit-learn
 $ poetry add langchain_openai
 
 
-
+poetry add torch
+poetry add sentence-transformers
 ```
 
 

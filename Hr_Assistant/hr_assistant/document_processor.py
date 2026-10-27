@@ -44,7 +44,8 @@ class DocumentProcessor:
 
         with open(file_path, "r") as file:
             txt = file.read()
-            sc = SemanticChunking()
+            # sc = SemanticChunking(Config.OPENAI_EMBEDDINGS_KEY, 70, 1)
+            sc = SemanticChunking(70, 1)
             chunks = sc.chunk_text(txt)
             file_metadata = DocumentProcessor.get_document_metadata(file_path)
 
