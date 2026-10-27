@@ -7,6 +7,7 @@ from datetime import datetime
 
 sys.path.insert(0, os.path.dirname(__file__))
 from config import Config
+from semantic_chunking import SemanticChunking
 
 
 class DocumentProcessor:
@@ -42,7 +43,10 @@ class DocumentProcessor:
         ids = []
 
         with open(file_path, "r", encoding="utf-8") as file:
-            chunks = file.read().replace("\n", ".").split("### ")
+            txt = file.read()
+            # OLD
+            # chunks = file.read().replace("\n", ".").split("### ")
+            chunks = SemanticChunking.chunk_it(txt)
             file_metadata = DocumentProcessor.get_document_metadata(file_path)
 
             for chunk in chunks:

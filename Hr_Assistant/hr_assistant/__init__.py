@@ -1,8 +1,4 @@
 import os
-import sys
-
-sys.path.insert(0, os.path.dirname(__file__))
-
 import chainlit as cl
 from document_processor import DocumentProcessor
 from database import Database
@@ -18,9 +14,9 @@ print(f"Document sync complete: {added} added, {updated} updated, {removed} remo
 
 @cl.action_callback("db_stats")
 async def on_action(action: cl.Action):
-    # print(action.payload)
+    print(action.payload)
     db_info = db.get_stats()
-    # print(db_info)
+    print(db_info)
     response = await LLMHelper.get_db_stats(db_info)
     await cl.Message(response).send()
 
@@ -30,12 +26,6 @@ async def on_action(action: cl.Action):
     added, updated, removed = DocumentProcessor.process_documents(db)
     message = f"DB reindicizzato con successo. Document sync complete: {added} added, {updated} updated, {removed} removed"
     await cl.Message(message).send()
-
-
-@cl.action_callback("say_hello")
-async def on_action(action: cl.Action):
-    action = action.payload["value"]
-    await cl.Message(f"Hello {action}").send()
 
 
 @cl.on_chat_start
@@ -75,18 +65,17 @@ async def start():
 @cl.on_message
 async def handle_message(message: cl.Message):
     user_question = message.content
-    results = db.query(user_question, 3)
-    print("RESULT DB: ", results)
+    results = db.query(user_question)
+
     filename = results["metadatas"][0][0]["source"]
-    candidate_info = DocumentProcessor.read_first_lines(
-        os.path.join(Config.DOCUMENTS_DIR, filename), 10
+    context_lines = DocumentProcessor.read_first_lines(
+        os.path.join(Config.DOCUMENTS_DIR, filename), 200
     )
 
-    context = f"CONTESTO: nome file {results['metadatas'][0][0]['source']} ecco il paragrafo piu' significativo: {results['documents'][0][0]}, qui trovi le informazioni del candidato: {candidate_info}"
+    context = f"CONTESTO: nome file {results['metadatas'][0][0]['source']} ecco il paragrafo piu' significativo: {results['documents'][0][0]}"
 
-    # candidate_name = await LLMHelper.get_candidate_name(context_lines)
-
-    prompt = LLMHelper.create_prompt(context, user_question)
+    candidate_name = await LLMHelper.get_candidate_name(context_lines)
+    prompt = LLMHelper.create_prompt(context, user_question, candidate_name)
 
     messages = cl.user_session.get("messages", [])
     messages.append({"role": "user", "content": prompt})

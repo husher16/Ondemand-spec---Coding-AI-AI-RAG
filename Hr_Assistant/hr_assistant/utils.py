@@ -1,8 +1,4 @@
 # utils.py
-import os
-import sys
-
-sys.path.insert(0, os.path.dirname(__file__))
 from config import Config
 from openai import OpenAI
 
@@ -40,7 +36,7 @@ class LLMHelper:
                 {
                     "role": "user",
                     "content": f"""
-                      Il tuo compito è quello di descrivere in modo testuale, ma sintetico, le statistiche legate al database dei frammenti indicizzati da questo sistema. Dammi pure la percentuale di frammenti indicizzati rispetto al totale dei file presenti nel database. Ecco le informazioni necessarie per le statistiche da fornire: {context}
+                      Il tuo compito è quello di descrivere in modo testuale, ma sintetico, le statistiche legate al database dei frammenti indicizzati da questo sistema. Ecco le informazioni necessarie per le statistiche da fornire: {context}
                       """,
                 }
             ],
@@ -48,15 +44,15 @@ class LLMHelper:
         return response.choices[0].message.content
 
     @staticmethod
-    def create_prompt(context, question):
+    def create_prompt(context, question, candidate_name):
         return f"""
             Dato il seguente contesto: 
             [[[
             {context}
             ]]].
-            Rispondi alla domanda dell'utente: [[[ {question}]]].
+            Rispondi alla domanda dell'utente: [[[ {question}]]] .
             Spiega che nel file individuato c'e' il profilo piu' adatto. 
-            Argomenta la scelta utilizzando il contenuto del testo individuato nel contesto.
-            Alla fine crea una sezione per i contatti del candidato indicando il nome, la sua email e il numero di telefono.
-            Dopo la sezione dei contatti indica il Nome del file del cv, non lo nominare mai prima di questa sezione.
+            Assicurati di nominare il Nome dei file.
+            Assicurati di indicare il nome del candidato: [[[ {candidate_name} ]]].
+            Argometa la scelta utilizzando il contenuto del testo individuato nel contesto.
         """
