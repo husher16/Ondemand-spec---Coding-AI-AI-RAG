@@ -86,12 +86,16 @@ class SemanticChunking:
         # Process sentences
         sentences = self._process_sentences(text)
 
-        # If we have no valid sentences, return the original text as a single chunk
-        if not sentences:
+        # If we have no valid sentences or only one sentence, return the original text as a single chunk
+        if not sentences or len(sentences) <= 1:
             return [text]
 
         # Calculate distances
         distances = self._calculate_distances(sentences)
+
+        # If no distances were calculated, return as a single chunk
+        if not distances:
+            return [text]
 
         # Determine split points based on percentile
         threshold = np.percentile(distances, self.breakpoint_percentile)
