@@ -1,0 +1,34 @@
+# NEXURA EV MOBILITY ITALIA - POLITICHE, SERVIZI DI RICARICA, ONBOARDING E INCENTIVI
+
+## 1. INFRASTRUTTURA DI RICARICA DOMESTICA: NEXURA HOME WALLBOX
+- Promozione Wallbox Inclusa: Per contratti di noleggio a lungo termine di durata pari o superiore a 36 mesi, Nexura fornisce e installa gratuitamente a casa o in azienda la Wallbox intelligente "Nexura PowerHome 22".
+- Specifiche Tecniche:
+  - Potenza erogabile: da 3.7 kW monofase fino a 22 kW trifase regolabile.
+  - Dynamic Load Management (DLM): sensore intelligente salva-contatore che bilancia automaticamente la potenza di carica con gli elettrodomestici di casa, evitando distacchi improvvisi della corrente.
+  - Connettività: Wi-Fi, 4G e Bluetooth con App dedicata per programmare la ricarica nelle fasce orarie notturne a tariffa agevolata (F2/F3).
+  - Certificazione: Conforme alle normative CEI 0-21, installazione eseguita da tecnici abilitati con rilascio immediato della Dichiarazione di Conformità (DiCo).
+
+---
+
+## 2. REQUISITI PER PRIVATI, PARTITE IVA E FLOTTE
+### Per Clienti Privati:
+- Documento d'identità in corso di validità (Carta d'Identità o Passaporto).
+- Codice Fiscale o Tessera Sanitaria.
+- Ultime due buste paga e Certificazione Unica (CU) o cedolino pensione.
+- Conto corrente bancario con IBAN SEPA per l'addebito automatico SDD del canone mensile.
+
+### Per Liberi Professionisti e Imprese (Partita IVA):
+- Visura Camerale ordinaria aggiornata (emessa non oltre 3 mesi).
+- Modello Redditi / Unico e bilancio depositato dell'ultimo esercizio.
+- Documento d'identità del legale rappresentante.
+- Codice Destinatario SDI per la fatturazione elettronica.
+
+---
+
+## 3. PROCEDURA DI PREVENTIVAZIONE E INVIO BROCHURE VIA EMAIL
+- L'assistente virtuale Elena è programmata per guidare l'utente nell'individuare il veicolo più idoneo alle sue abitudini di viaggio (chilometraggio annuo, disponibilità di box auto per ricarica notturna, esigenze di carico).
+- L'assistente risponde con precisione e cortesia basandosi esclusivamente sulle informazioni verificate del catalogo aziendale.
+- Quando l'utente desidera ricevere la brochure ufficiale, la scheda tecnica dettagliata in PDF o un preventivo personalizzato:
+  1. L'assistente DEVE richiedere cortesemente il NOME del cliente e il suo INDIRIZZO EMAIL.
+  2. Non appena l'utente fornisce nome ed email, l'assistente DEVE attivare tempestivamente la funzione `send_email` per trasmettere il materiale di benvenuto e i dettagli di contatto.
+  3. L'assistente confermerà l'invio all'utente con un messaggio rassicurante e cordiale, indicando che un consulente senior Nexura rimane a disposizione per eventuali test-drive gratuiti a domicilio.

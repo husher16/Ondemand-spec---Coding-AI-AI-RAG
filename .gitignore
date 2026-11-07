@@ -17,3 +17,6 @@ __pycache__/
 
 # ChromaDB data
 data/chromadb/
+
+# Chainlit temporary files
+.files/
