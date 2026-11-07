@@ -20,3 +20,11 @@ data/chromadb/
 
 # Chainlit temporary files
 .files/
+
+# Archive files and course PDFs
+*.zip
+*.tar.gz
+**/docs/
+docs/
+progetto_finale/progetto-finale/
+
